@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">BLE AP Cart</string>
+    <string name="edit_hub_mac">CC:1B:E0:E0:25:90</string>
+    <string name="edit_ble_mac">00:0E:0B:13:C5:B4</string>
+    <string name="send_hub_mac">Send</string>
+    <string name="send_ble_mac">Send</string>
+    <string name="head_hub_mac">HUB MAC:</string>
+    <string name="head_ble_mac">BLE MAC:</string>
+</resources>
