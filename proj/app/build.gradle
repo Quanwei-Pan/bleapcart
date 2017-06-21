@@ -27,9 +27,11 @@ dependencies {
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-    compile files('src/main/lib/cassianetwork.jar')
-    compile files('src/main/lib/libthrift.jar')
-    compile files('src/main/lib/log4j.jar')
-    compile files('src/main/lib/slf4j-api-1.5.8.jar')
-    compile files('src/main/lib/slf4j-log4j12-1.5.8.jar')
+    compile files('src/main/lib/commons-codec-1.6.jar')
+    compile files('src/main/lib/commons-logging-1.1.1.jar')
+    compile files('src/main/lib/httpclient-4.2.5.jar')
+    compile files('src/main/lib/fluent-hc-4.2.5.jar')
+    compile files('src/main/lib/httpclient-cache-4.2.5.jar')
+    compile files('src/main/lib/httpcore-4.2.4.jar')
+    compile files('src/main/lib/httpmime-4.2.5.jar')
 }
