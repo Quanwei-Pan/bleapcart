@@ -6,4 +6,5 @@
     <string name="send_ble_mac">连接</string>
     <string name="head_hub_mac">HUB MAC:</string>
     <string name="head_ble_mac">BLE MAC:</string>
+    <string name="hello_world">hehe</string>
 </resources>

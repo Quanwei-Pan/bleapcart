@@ -1,5 +1,14 @@
 package com.armaccelerator.bleapcart;
 
+import android.os.Handler;
+import android.os.Message;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -20,80 +29,45 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 public class httpRequest {
-    /**
-     * 发送GET请求
-     * @param url
-     * @param params
-     * @param headers
-     * @return
-     * @throws Exception
-     */
-    public static URLConnection sendGetRequest(String url,
-                                               Map<String, String> params, Map<String, String> headers)
-            throws Exception {
-        StringBuilder buf = new StringBuilder(url);
-        Set<Entry<String, String>> entrys = null;
-        // 如果是GET请求，则请求参数在URL中
-        if (params != null && !params.isEmpty()) {
-            buf.append("?");
-            entrys = params.entrySet();
-            for (Map.Entry<String, String> entry : entrys) {
-                buf.append(entry.getKey()).append("=")
-                        .append(URLEncoder.encode(entry.getValue(), "UTF-8"))
-                        .append("&");
-            }
-            buf.deleteCharAt(buf.length() - 1);
-        }
-        URL url1 = new URL(buf.toString());
-        HttpURLConnection conn = (HttpURLConnection) url1.openConnection();
-        conn.setRequestMethod("GET");
-        // 设置请求头
-        if (headers != null && !headers.isEmpty()) {
-            entrys = headers.entrySet();
-            for (Map.Entry<String, String> entry : entrys) {
-                conn.setRequestProperty(entry.getKey(), entry.getValue());
-            }
-        }
-        conn.getResponseCode();
-        return conn;
-    }
-    /**
-     * 发送POST请求
-     * @param url
-     * @param params
-     * @param headers
-     * @return
-     * @throws Exception
-     */
-    public static URLConnection sendPostRequest(String url,
-                                                Map<String, String> params, Map<String, String> headers)
-            throws Exception {
-        StringBuilder buf = new StringBuilder();
-        Set<Entry<String, String>> entrys = null;
-        // 如果存在参数，则放在HTTP请求体，形如name=aaa&age=10
-        if (params != null && !params.isEmpty()) {
-            entrys = params.entrySet();
-            for (Map.Entry<String, String> entry : entrys) {
-                buf.append(entry.getKey()).append("=")
-                        .append(URLEncoder.encode(entry.getValue(), "UTF-8"))
-                        .append("&");
-            }
-            buf.deleteCharAt(buf.length() - 1);
-        }
-        URL url1 = new URL(url);
-        HttpURLConnection conn = (HttpURLConnection) url1.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setDoOutput(true);
-        OutputStream out = conn.getOutputStream();
-        out.write(buf.toString().getBytes("UTF-8"));
-        if (headers != null && !headers.isEmpty()) {
-            entrys = headers.entrySet();
-            for (Map.Entry<String, String> entry : entrys) {
-                conn.setRequestProperty(entry.getKey(), entry.getValue());
-            }
-        }
-        conn.getResponseCode(); // 为了发送成功
-        return conn;
-    }
 
+    public static final int SHOW_RESPONSE = 0;
+
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case SHOW_RESPONSE:
+                    String response = (String) msg.obj;
+                    tx_response.setText(response);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    //发送网络请求，开启线程
+    public static  String sendRequestWithHttpClient(final String url) {
+        final String[] result = {null};
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //用HttpClient发送请求
+                HttpClient httpCient = new DefaultHttpClient();
+                HttpGet httpGet = new HttpGet(url);
+                try {
+                    HttpResponse httpResponse = httpCient.execute(httpGet);
+                    if (httpResponse.getStatusLine().getStatusCode() == 200) {
+                        HttpEntity entity = httpResponse.getEntity();
+                        String response = EntityUtils.toString(entity, "utf-8"); //将entity当中的数据转换为字符串
+                        result[0] = response.toString();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();//这个start()方法不要忘记了
+        return result[0];
+    }
 }
