@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity{
 
     public String ble_mac = "00:0E:0B:13:C5:B4";  //蓝牙BLE MAC
     public String hub_mac = "CC:1B:E0:E0:25:90";  //HUB MAC
-    public String hub_ip  = null;  //HUB IP
+    public String hub_ip  = "";  //HUB IP
 
     public static final int SHOW_RESPONSE = 0;
 
@@ -70,23 +70,29 @@ public class MainActivity extends AppCompatActivity{
 
                 //按键触发
                 if (send_ble_mac == view) {
-
-                    vibrateHelp.vSimple(view.getContext(), VIBRATE_TIME);
-                    ble_mac = editText.getText().toString();
-                    if(ble_mac.equals(""))
-                    {
-                        ble_mac = "00:0E:0B:13:C5:B4";
+                    if (hub_ip.equals("")){
+                        Looper.prepare();
+                        Toast toast = Toast.makeText(MainActivity.this, String.format("请连接HUB"), Toast.LENGTH_SHORT);
+                        toast.show();
+                        Looper.loop();
                     }
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String response = cassiaHub.connectBle(ble_mac,hub_ip);
-                            Looper.prepare();
-                            Toast toast = Toast.makeText(MainActivity.this, String.format("BLE连接状态：%s",response), Toast.LENGTH_SHORT);
-                            toast.show();
-                            Looper.loop();
+                    else {
+                        vibrateHelp.vSimple(view.getContext(), VIBRATE_TIME);
+                        ble_mac = editText.getText().toString();
+                        if (ble_mac.equals("")) {
+                            ble_mac = "00:0E:0B:13:C5:B4";
                         }
-                    }).start();
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String response = cassiaHub.connectBle(ble_mac, hub_ip);
+                                Looper.prepare();
+                                Toast toast = Toast.makeText(MainActivity.this, String.format("BLE连接状态：%s", response), Toast.LENGTH_SHORT);
+                                toast.show();
+                                Looper.loop();
+                            }
+                        }).start();
+                    }
                 }
 
                 //按键触发
@@ -97,13 +103,24 @@ public class MainActivity extends AppCompatActivity{
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            String result = cassiaHub.disconnectBle(ble_mac,hub_ip);
-                            if(result.equals("OK")) {
+                            if(hub_ip.equals(""))
+                            {
                                 Looper.prepare();
-                                Toast toast = Toast.makeText(MainActivity.this, "连接断开", Toast.LENGTH_SHORT);
+                                Toast toast = Toast.makeText(MainActivity.this, "请连接HUB", Toast.LENGTH_SHORT);
                                 toast.show();
                                 Looper.loop();
                             }
+                            else
+                            {
+                                String result = cassiaHub.disconnectBle(ble_mac,hub_ip);
+                                if(result.equals("OK")) {
+                                    Looper.prepare();
+                                    Toast toast = Toast.makeText(MainActivity.this, "连接断开", Toast.LENGTH_SHORT);
+                                    toast.show();
+                                    Looper.loop();
+                                }
+                            }
+
                         }
                     }).start();
                 }
@@ -114,10 +131,6 @@ public class MainActivity extends AppCompatActivity{
                         @Override
                         public void run() {
                             int index = cassiaHub.sendCommand(ble_mac,hub_ip,"ahead");
-                            Looper.prepare();
-                            Toast toast = Toast.makeText(MainActivity.this, String.format("方向：%d",index), Toast.LENGTH_SHORT);
-                            toast.show();
-                            Looper.loop();
                         }
                     }).start();
 
@@ -129,10 +142,6 @@ public class MainActivity extends AppCompatActivity{
                         @Override
                         public void run() {
                             int index = cassiaHub.sendCommand(ble_mac,hub_ip,"back");
-                            Looper.prepare();
-                            Toast toast = Toast.makeText(MainActivity.this, String.format("方向：%d",index), Toast.LENGTH_SHORT);
-                            toast.show();
-                            Looper.loop();
                         }
                     }).start();
 
@@ -144,10 +153,6 @@ public class MainActivity extends AppCompatActivity{
                         @Override
                         public void run() {
                             int index = cassiaHub.sendCommand(ble_mac,hub_ip,"left");
-                            Looper.prepare();
-                            Toast toast = Toast.makeText(MainActivity.this, String.format("方向：%d",index), Toast.LENGTH_SHORT);
-                            toast.show();
-                            Looper.loop();
                         }
                     }).start();
                 }
@@ -158,10 +163,6 @@ public class MainActivity extends AppCompatActivity{
                         @Override
                         public void run() {
                             int index = cassiaHub.sendCommand(ble_mac,hub_ip,"right");
-                            Looper.prepare();
-                            Toast toast = Toast.makeText(MainActivity.this, String.format("方向：%d",index), Toast.LENGTH_SHORT);
-                            toast.show();
-                            Looper.loop();
                         }
                     }).start();
 
@@ -173,10 +174,6 @@ public class MainActivity extends AppCompatActivity{
                         @Override
                         public void run() {
                             int index = cassiaHub.sendCommand(ble_mac,hub_ip,"stop");
-                            Looper.prepare();
-                            Toast toast = Toast.makeText(MainActivity.this, String.format("方向：%d",index), Toast.LENGTH_SHORT);
-                            toast.show();
-                            Looper.loop();
                         }
                     }).start();
 
